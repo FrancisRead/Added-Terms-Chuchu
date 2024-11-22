@@ -27,6 +27,8 @@ const userdetails = ref({
 });
 const reg_type = ref('shelter');
 const items = ref([]);
+const termsChecked = ref(false);  // Track if terms are accepted
+const showTermsModal = ref(false); // Control modal visibility
 
 // Methods
 // const handleMultipleFileChange = (event) => {
@@ -96,6 +98,11 @@ const handleSignup = async () => {
         emailError.value = false;
         passwordError.value = false;
         fileError.value = false;
+
+        if (!sheltername.value || !email.value || !password.value || !termsChecked.value) {
+            if (!termsChecked.value) alert("Please accept the terms and conditions.");
+            return;
+        }
 
         // Nov21 Validate the fields
         if (!sheltername.value) {
@@ -170,7 +177,22 @@ const setUser = async () => {
         };
         console.log("finally stage");
     }
-};
+
+    };
+
+        const openTermsModal = () => {
+        showTermsModal.value = true;
+    };
+
+    const acceptTerms = () => {
+        termsChecked.value = true;
+        showTermsModal.value = false;
+    };
+
+    const goBack = () => {
+        router.push('/login');  // Navigate back to login page
+    };
+
 
 </script>
 <template>
@@ -264,17 +286,93 @@ const setUser = async () => {
                                 A shelter must provide documentation for verification.</p>
                         </div>
 
-                        <div class="sm:mx-4 lg:mx-0 col-span-6 text-center">
-                            <p class="text-sm text-gray-500">
+                        <div class="col-span-6 flex flex-col justify-center items-center gap-y-2">
+                        <div class="flex items-center gap-x-2">
+                            <input
+                                type="checkbox"
+                                v-model="termsChecked"
+                                :disabled="!termsChecked"
+                                class="form-checkbox"
+                            />
+                            <label for="terms" class="text-sm text-gray-500">
                                 By creating an account, you agree to our
-                                <a href="#" class="text-gray-700 underline">terms and conditions</a>
+                                <a href="#" @click.prevent="openTermsModal" class="text-gray-700 underline">terms and conditions</a>
                                 and
                                 <a href="#" class="text-gray-700 underline">privacy policy</a>.
-                            </p>
+                            </label>
                         </div>
-                        <div class="col-span-6 flex flex-col sm:items-center sm:gap-4">
+                        <p v-if="!termsChecked && submitted" class="text-red-500 text-[11px]">*You must agree to the terms and conditions</p>
+                    </div>
+                    <!-- Modal for Terms and Conditions -->
+                    <div v-if="showTermsModal" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+                        <div class="bg-white p-6 rounded-lg w-3/4 md:w-1/2 max-h-[80vh] overflow-y-auto">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Terms and Conditions</h2>
+                            <p class="text-sm text-gray-700 mb-4">
+                            By registering as a Shelter on FurrySafe, you agree to the following Terms and Conditions:
+
+                            <br><br>
+                            1. <strong>Business and Account Responsibility</strong>: 
+                            As a registered Shelter, you are responsible for maintaining the accuracy and confidentiality of your business information, including your shelter name, contact details, and any other relevant account details. You agree to notify FurrySafe immediately if there is any unauthorized access to your account. FurrySafe is not liable for any unauthorized activities related to your account or any inaccurate information submitted.
+
+                            <br><br>
+                            2. <strong>Use of the Platform</strong>: 
+                            By using FurrySafe, you agree to utilize the platform solely for lawful and ethical business practices related to animal rescue, care, and adoption. You shall not engage in activities that harm the platform's integrity, including but not limited to misrepresentation of animals, misuse of the system, or activities that violate animal welfare laws. FurrySafe reserves the right to suspend or terminate accounts for violations.
+
+                            <br><br>
+                            3. <strong>Animal Welfare</strong>: 
+                            As a registered Shelter, you commit to ensuring the well-being and protection of the animals in your care. You agree to follow animal protection laws, including providing adequate shelter, nutrition, and medical care for rescued animals. FurrySafe expects you to participate in the platform's initiatives to promote responsible animal rescue and adoption.
+
+                            <br><br>
+                            4. <strong>Liability for Animals</strong>: 
+                            By registering as a Shelter, you acknowledge that you are legally responsible for the care and safety of the animals placed under your care. You agree to comply with local laws and regulations regarding animal welfare and safety. FurrySafe will not be held responsible for any injury, illness, or harm to animals in your care, and you agree to indemnify FurrySafe from any such claims.
+
+                            <br><br>
+                            5. <strong>Privacy and Data Protection</strong>: 
+                            You agree to respect the privacy of individuals using the FurrySafe platform. Any personal data collected, such as information on animal adoption applicants or your staff, must be handled in accordance with privacy laws and FurrySafe’s privacy policy. You agree to secure all personal and sensitive data and not misuse it for any purposes other than animal care and adoption.
+
+                            <br><br>
+                            6. <strong>Donations and Fundraising</strong>: 
+                            If you choose to accept donations through the FurrySafe platform, you agree to comply with any applicable local regulations concerning fundraising and donations. FurrySafe is not responsible for the allocation or management of any donations; they are handled directly by your shelter. Any fundraising activities on the platform must be transparent and clearly communicate the purpose for which the funds will be used.
+
+                            <br><br>
+                            7. <strong>Termination and Suspension</strong>: 
+                            FurrySafe reserves the right to suspend or terminate your Shelter account at any time if you are found to be in violation of these Terms and Conditions or engage in fraudulent or illegal activities. Upon termination, you will lose access to your account and any data associated with it. FurrySafe reserves the right to report any unlawful activity to the appropriate authorities.
+
+                            <br><br>
+                            8. <strong>Changes to Terms</strong>: 
+                            FurrySafe reserves the right to modify these Terms and Conditions at any time. Changes will be posted on the platform, and your continued use of the platform will be considered acceptance of the updated terms. It is your responsibility to review the Terms and Conditions regularly to stay informed of any changes.
+
+                            <br><br>
+                            9. <strong>Indemnification</strong>: 
+                            You agree to indemnify and hold harmless FurrySafe, its affiliates, officers, employees, and agents from any claims, losses, or damages arising from your actions, including but not limited to your failure to comply with local laws or mismanagement of animal care. This includes any legal costs, fees, or settlements resulting from a lawsuit filed against you or FurrySafe.
+
+                            <br><br>
+                            10. <strong>Limitation of Liability</strong>: 
+                            FurrySafe is not liable for any indirect, incidental, special, or consequential damages arising from your use of the platform. This includes damages related to loss of data, business interruptions, or any legal actions resulting from your participation in animal rescue or adoption activities. You use the platform at your own risk.
+
+                            <br><br>
+                            11. <strong>Governing Law</strong>: 
+                            These Terms and Conditions shall be governed by the laws of the jurisdiction in which FurrySafe operates. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts in that jurisdiction.
+
+                            <br><br>
+                            12. <strong>Force Majeure</strong>: 
+                            FurrySafe will not be held responsible for any delay or failure to perform its obligations under these Terms and Conditions due to causes beyond its reasonable control, including but not limited to natural disasters, acts of government, or technical failures.
+
+                            <br><br>
+                            If you have any questions or concerns about these Terms and Conditions, please contact us at support@furrysafe.com.
+                        </p>
+                            <div class="flex justify-center mt-4">
+                                <button 
+                                    @click="acceptTerms" 
+                                    class="bg-gray-800 text-white text-sm px-4 py-2 rounded-md hover:bg-teal-600 transition duration-300">
+                                    Accept
+                                </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-6 flex flex-col justify-center items-center gap-y-2 ">
                             <button @click.prevent="handleSignup()"
-                                class="w-[50%] bg-gray-800 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300">
+                                class="w-full bg-gray-800 text-white py-3  rounded-lg hover:bg-teal-600 transition duration-300">
                                 Create an account
                             </button>
 
